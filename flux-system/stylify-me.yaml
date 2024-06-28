@@ -17,6 +17,8 @@ spec:
         role: deployment
         tier: app
     spec:
+      nodeSelector:
+        nodePool: cluster 
       containers:
       - name: stylify-me-service
         image: us-central1-docker.pkg.dev/lumen5-170819/lumen5/stylify-me
