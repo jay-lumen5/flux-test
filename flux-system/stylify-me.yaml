@@ -17,8 +17,6 @@ spec:
         role: deployment
         tier: app
     spec:
-      nodeSelector:
-        nodePool: cluster 
       containers:
       - name: stylify-me-service
         image: stylify-api
