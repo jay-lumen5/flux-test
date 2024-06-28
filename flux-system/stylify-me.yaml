@@ -47,25 +47,3 @@ spec:
     - name: stylify-me-service
       port: 3003
       targetPort: 3003
----
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: stylify-me-service
-  namespace: default
-spec:
-  gateways:
-  - mesh
-  hosts:
-  - stylify-me-service.default.svc.cluster.local
-  http:
-  - headers:
-      request:
-        add:
-          x-envoy-max-retries: "10"
-          x-envoy-retry-on: gateway-error,connect-failure,refused-stream
-    route:
-    - destination:
-        host: stylify-me-service.default.svc.cluster.local
-        port:
-          number: 3003
