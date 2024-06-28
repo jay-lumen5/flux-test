@@ -21,7 +21,7 @@ spec:
         nodePool: cluster 
       containers:
       - name: stylify-me-service
-        image: us-central1-docker.pkg.dev/lumen5-170819/lumen5/stylify-me
+        image: stylify-api
         ports:
         - containerPort: 3003
         resources:
