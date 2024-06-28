@@ -1,0 +1,71 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stylify-me-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: stylify-me
+      role: deployment
+      tier: app
+  template:
+    metadata:
+      labels:
+        app: stylify-me
+        role: deployment
+        tier: app
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: 'default-pool'
+      containers:
+      - name: stylify-me-service
+        image: us-central1-docker.pkg.dev/lumen5-170819/lumen5/stylify-me
+        ports:
+        - containerPort: 3003
+        resources:
+          requests:
+            cpu: '0.5'
+            memory: '1100Mi'
+          limits:
+            memory: '1500Mi'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stylify-me-service
+  namespace: default
+spec:
+    type: ClusterIP
+    selector:
+      tier: app
+      app: stylify-me
+      role: deployment
+
+    ports:
+    - name: stylify-me-service
+      port: 3003
+      targetPort: 3003
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: stylify-me-service
+  namespace: default
+spec:
+  gateways:
+  - mesh
+  hosts:
+  - stylify-me-service.default.svc.cluster.local
+  http:
+  - headers:
+      request:
+        add:
+          x-envoy-max-retries: "10"
+          x-envoy-retry-on: gateway-error,connect-failure,refused-stream
+    route:
+    - destination:
+        host: stylify-me-service.default.svc.cluster.local
+        port:
+          number: 3003
